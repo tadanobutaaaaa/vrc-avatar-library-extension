@@ -1,6 +1,6 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
-
 import { getInformation } from "~templates/getInformation"
+
 
 const handler: PlasmoMessaging.MessageHandler<string> = async (req) => {
     console.log("処理が開始しました")
