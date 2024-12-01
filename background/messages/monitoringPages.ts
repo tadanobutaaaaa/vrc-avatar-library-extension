@@ -7,7 +7,11 @@ let onUpdatedListener = null
 const handler: PlasmoMessaging.MessageHandler<string> = async (req) => {
     onUpdatedListener = (tabId, changeInfo, tab) => {
         if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
-            console.log("complete")
+            if (timerId !== null) {
+                clearTimeout(timerId)
+                console.log('タイマーをリセットしました')
+                timer()
+            }
             chrome.scripting.executeScript({
                 target: { tabId },
                 func: getInformation
@@ -17,15 +21,10 @@ const handler: PlasmoMessaging.MessageHandler<string> = async (req) => {
 
     chrome.tabs.onUpdated.addListener(onUpdatedListener)
     console.log("監視状態に入ります")
-
     timer()
 }
 
 function timer() {
-    if (timerId !== null) {
-        clearTimeout(timerId)
-        console.log('タイマーをリセットしました')
-    }
     timerId = setTimeout(() => {
         console.log("タイマーが終了しました")
         if (onUpdatedListener) {
@@ -33,8 +32,7 @@ function timer() {
             console.log("処理を停止しました")
             onUpdatedListener = null
         }
-    }, 1000)
-
+    }, 2000)
     console.log("タイマーを開始しました")
 }
 
