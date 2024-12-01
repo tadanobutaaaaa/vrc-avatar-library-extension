@@ -4,6 +4,10 @@ export function getInformation() {
         for(let i = 0; i < elements.length; i++) {
             const imageDiv: string = elements[i].querySelector("img:first-child").getAttribute('src')
             console.log(imageDiv)
+
+            const titleName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")[0].textContent
+            console.log(titleName)
+
             const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
             for(let j = 0; j < fileNameGroup.length; j++) {
                 const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
