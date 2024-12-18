@@ -1,6 +1,17 @@
 export function getInformation() {
-    function mainProcessing() {
+    async function mainProcessing() {
+        //現在のurlを取得する
+        const currentUrl = new URL(window.location.href)
+        let pageNumber = currentUrl.searchParams.get('page')
+        console.log(currentUrl.href)
+
+        if (pageNumber == null) {
+            pageNumber = '1'
+        }
+        console.log(pageNumber)
+
         //すべての商品を取得する
+        const pageList = [];
         const elements = document.getElementsByClassName("mb-16 bg-white p-16 desktop:rounded-8 desktop:py-24 desktop:px-40")
         for(let i = 0; i < elements.length; i++) {
             //画像のリンクを取得する
@@ -26,25 +37,47 @@ export function getInformation() {
 
                 fileList.push(fileReplaceZip)
             }
-            console.log(fileList)
-            //google storageを使用する機能を書く
-            //chrome.storage.local.set()
+
+            pageList.push({
+                [String(fileList)]: {
+                    "src": imageSrc,
+                    "id": itemId,
+                }
+            })
         }
 
-        const currentUrl = new URL(window.location.href)
-        let pageNumber = currentUrl.searchParams.get('page')
-        console.log(currentUrl.href)
+        const result = await chrome.storage.local.get(["postInformation"]);
+            if (Object.keys(result).length === 0) {
+                await chrome.storage.local.set({
+                    "postInformation": {
+                        [pageNumber]: pageList,
+                    },
+                });
+                console.log("初めてのStorageの登録が完了しました");
+            } else {
+                const currentData = result.postInformation;
+                const updateData = {
+                    ...currentData,
+                    [pageNumber]: pageList,
+                };
 
-        if (pageNumber == null) {
-            pageNumber = '1'
-        }
-        console.log(pageNumber)
+                await chrome.storage.local.set({
+                    "postInformation": updateData,
+                });
+                console.log("データの更新がされました");
+            }
+
+            const allData = chrome.storage.local.get(null);
+            console.log(allData);
+            
+
 
         //次のページに行くボタンが有るかの判定
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
         if (nextButton.length === 0) {
             //なければ処理を終了する
             console.log("次のページは存在しません")
+            chrome.storage.local.clear();
         }
         else {
             //あればボタンをクリックし次のページに進む
