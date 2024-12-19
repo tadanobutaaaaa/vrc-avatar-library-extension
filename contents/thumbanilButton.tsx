@@ -27,4 +27,4 @@ const CustomButton = () => {
     return <button onClick={getThumbnail}>Custom button</button>
 }
 
-export default CustomButton
+export default CustomButton;
