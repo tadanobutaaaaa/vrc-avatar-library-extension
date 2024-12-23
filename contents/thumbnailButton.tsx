@@ -26,13 +26,25 @@ const getThumbnail = async() => {
     }
 }
 
-//plasmoのエラー対策 特に意味はなし
+//plasmoのエラー対策 特に意味はなし 
 const EmptyElement: React.FC = () => {
     return <></>
 }
 
 const CustomButton = () => {
-    return <button onClick={getThumbnail}>Custom button</button>
+    return <button
+    style={{
+        backgroundColor: "#38B2AC",
+        color: "#fff",
+        padding: "8px 16px",
+        borderRadius: "4px",
+        border: "none",
+        fontWeight: "bold",
+        cursor: "pointer",
+        marginTop: "10px",
+    }}
+    onClick={getThumbnail}
+    >処理開始ボタン</button>
 }
 
 window.addEventListener("load", () => {
