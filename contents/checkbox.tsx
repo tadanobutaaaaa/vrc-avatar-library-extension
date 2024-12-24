@@ -10,10 +10,26 @@ const EmptyElement: React.FC = () => {
     return <></>
 }
 
+type CheckboxProps = {
+    defaultStatus: boolean
+    itemId: string
+}
 
-const CheckboxWithLabel = () => {
+const CheckboxWithLabel = ({ defaultStatus, itemId }: CheckboxProps) => {
+    const handleChange = (checked: boolean, productId: string) => {
+        console.log(checked)
+        chrome.storage.local.set({[productId]: checked})
+    }
     return (
-        <></>
+        <input 
+        type="checkbox"
+        style={{
+            width: "17px",
+            height: "17px",
+        }}
+        defaultChecked={defaultStatus}
+        onChange={(e) => {handleChange(e.target.checked,itemId)}}
+        ></input>
     )
 }
 
@@ -22,25 +38,23 @@ window.addEventListener("load", () => {
     for(let i = 0; i < elements.length; i++) {
         const element = elements[i].getElementsByClassName("flex gap-8 desktop:gap-16 border-b border-border300 pb-16")
 
-        const shadowHost = document.createElement("div")
-        document.body.appendChild(shadowHost)
+        const imagehref = elements[i].querySelector("a:first-child").getAttribute("href")
+        const itemId = imagehref.replace("https://booth.pm/ja/items/","")
 
-        const shadowRoot = shadowHost.attachShadow({mode: "open"})
-
-        //const checkboxContainer = document.createElement("div")
-        //checkboxContainer.style.cssText = `
-        //    position: absolute;
-        //    left: 10px;`
-        
-        //const targetElement = element[0] as HTMLElement
-        //targetElement.style.position = "relative"
-        //targetElement.appendChild(checkboxContainer)
-        
-        const root = createRoot(shadowRoot)
-        // Providerがレイアウトを崩す
-        root.render(
-            <></>
-        )
+        chrome.storage.local.get([itemId], (result) => {
+            let isChecked = true
+            console.log("result:",result)
+            if(Object.keys(result).length !== 0) {
+                isChecked = result[itemId]
+            }
+            const checkboxContainer = document.createElement("div")
+            element[0].before(checkboxContainer)
+            
+            const root = createRoot(checkboxContainer)
+            root.render(
+                <CheckboxWithLabel defaultStatus={isChecked} itemId={itemId}/>
+            ) 
+        })
     }
 })
 

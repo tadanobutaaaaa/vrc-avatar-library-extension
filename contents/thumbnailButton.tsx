@@ -50,7 +50,6 @@ const CustomButton = () => {
 window.addEventListener("load", () => {
     const target = document.querySelector("ul")
     if (!target) return
-    console.log(target)
 
     const container = document.createElement("div")
     target.after(container)
