@@ -53,29 +53,30 @@ export function getInformation() {
                 }
             })
         }
-        const result = await chrome.storage.local.get(["postInformation"]);
+
+        const result = await chrome.storage.local.get(["postInformation"])
         if (Object.keys(result).length === 0) {
             await chrome.storage.local.set({
                 "postInformation": {
                     [pageNumber]: pageList,
                 },
-            });
+            })
             console.log("初めてのStorageの登録が完了しました");
         } else if(pageList.length !== 0) {
             const currentData = result.postInformation;
             const updateData = {
                 ...currentData,
                 [pageNumber]: pageList,
-            };
+            }
 
             await chrome.storage.local.set({
                 "postInformation": updateData,
-            });
-            console.log("データの更新がされました");
+            })
+            console.log("データの更新がされました")
         }
 
-        const allData = chrome.storage.local.get(null);
-        console.log(allData);
+        const allData = chrome.storage.local.get(null)
+        console.log(allData)
 
         //次のページに行くボタンが有るかの判定
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
