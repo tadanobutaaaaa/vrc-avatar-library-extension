@@ -18,6 +18,8 @@ type CheckboxProps = {
 const ResetCheckboxButton = () => {
     const buttonProcess = () => {
         chrome.storage.local.clear()
+        const allData = chrome.storage.local.get(null);
+        console.log(allData);
         window.location.reload()
     }
     return (
@@ -41,6 +43,7 @@ const CheckboxWithLabel = ({ defaultStatus, itemId }: CheckboxProps) => {
     const handleChange = (checked: boolean, productId: string) => {
         console.log(checked)
         chrome.storage.local.set({[productId]: checked})
+        console.log(chrome.storage.local.get([productId]))
     }
     return (
         <input 
@@ -68,23 +71,23 @@ window.addEventListener("load", () => {
     for(let i = 0; i < elements.length; i++) {
         const element = elements[i].getElementsByClassName("flex gap-8 desktop:gap-16 border-b border-border300 pb-16")
 
-        const imagehref = elements[i].querySelector("a:first-child").getAttribute("href")
-        const itemId = imagehref.replace("https://booth.pm/ja/items/","")
+        const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
+        const itemNameText = itemName[0].textContent
 
-        chrome.storage.local.get([itemId], (result) => {
+        chrome.storage.local.get([itemNameText], (result) => {
             let isChecked: boolean
             if(Object.keys(result).length !== 0) {
-                isChecked = result[itemId]
+                isChecked = result[itemNameText]
             } else {
                 isChecked = true
-                chrome.storage.local.set({[itemId]: true})
+                chrome.storage.local.set({[itemNameText]: true})
             }
             const checkboxContainer = document.createElement("div")
             element[0].before(checkboxContainer)
             
             const root = createRoot(checkboxContainer)
             root.render(
-                <CheckboxWithLabel defaultStatus={isChecked} itemId={itemId}/>
+                <CheckboxWithLabel defaultStatus={isChecked} itemId={itemNameText}/>
             ) 
         })
     }

@@ -3,12 +3,9 @@ export function getInformation() {
         //現在のurlを取得する
         const currentUrl = new URL(window.location.href)
         let pageNumber = currentUrl.searchParams.get('page')
-        console.log(currentUrl.href)
-
         if (pageNumber == null) {
             pageNumber = '1'
         }
-        console.log(pageNumber)
 
         //すべての商品を取得する
         const pageList = [];
@@ -24,62 +21,69 @@ export function getInformation() {
             console.log(imageSrc)
             console.log(itemId)
 
-            const checkboxStorage = chrome.storage.local.get([itemId])
-            if (checkboxStorage) {
-                chrome.storage.local.set({[itemId]: !checkboxStorage})
-                //フォルダの郡を取得する
-                const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
+            const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
+            const itemNameText = itemName[0].textContent
 
-                const fileList: string[] = []
-                for(let j = 0; j < fileNameGroup.length; j++) {
-                    //フォルダの名前を取得する
-                    const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
-                    //文字だけを取得する
-                    const fileText = fileName[0].textContent
-                    const fileReplaceZip = fileText.replace(".zip", "")
+            chrome.storage.local.get([itemNameText], (result) => {
+                const checkboxStorage = result[itemNameText]
+                console.log(checkboxStorage)
+                if (checkboxStorage) {
+                    console.log("checkboxがtrueです")
+                    chrome.storage.local.set({[itemNameText]: false})
+                    //フォルダの郡を取得する
+                    const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
 
-                    fileList.push(fileReplaceZip)
-                }
+                    const fileList: string[] = []
+                    for(let j = 0; j < fileNameGroup.length; j++) {
+                        //フォルダの名前を取得する
+                        const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
+                        //文字だけを取得する
+                        const fileText = fileName[0].textContent
+                        const fileReplaceZip = fileText.replace(".zip", "")
 
-                pageList.push({
-                    [String(fileList)]: {
-                        "src": imageSrc,
-                        "id": itemId,
+                        fileList.push(fileReplaceZip)
                     }
-                })
+
+                    pageList.push({
+                        [String(fileList)]: {
+                            "src": imageSrc,
+                            "id": itemId,
+                        }
+                    })
                 }
+            })
+        }
+        const result = await chrome.storage.local.get(["postInformation"]);
+        if (Object.keys(result).length === 0) {
+            await chrome.storage.local.set({
+                "postInformation": {
+                    [pageNumber]: pageList,
+                },
+            });
+            console.log("初めてのStorageの登録が完了しました");
+        } else {
+            const currentData = result.postInformation;
+            const updateData = {
+                ...currentData,
+                [pageNumber]: pageList,
+            };
 
-                const result = await chrome.storage.local.get(["postInformation"]);
-                if (Object.keys(result).length === 0) {
-                    await chrome.storage.local.set({
-                        "postInformation": {
-                            [pageNumber]: pageList,
-                        },
-                    });
-                    console.log("初めてのStorageの登録が完了しました");
-                } else {
-                    const currentData = result.postInformation;
-                    const updateData = {
-                        ...currentData,
-                        [pageNumber]: pageList,
-                    };
+            await chrome.storage.local.set({
+                "postInformation": updateData,
+            });
+            console.log("データの更新がされました");
+        }
 
-                    await chrome.storage.local.set({
-                        "postInformation": updateData,
-                    });
-                    console.log("データの更新がされました");
-                }
-
-                const allData = chrome.storage.local.get(null);
-                console.log(allData);
-            }
+        const allData = chrome.storage.local.get(null);
+        console.log(allData);
 
         //次のページに行くボタンが有るかの判定
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
         if (nextButton.length === 0) {
             //なければ処理を終了する
+            chrome.storage.local.remove(["postInformation"])
             console.log("次のページは存在しません")
-            chrome.storage.local.remove("postInformation")
+            setTimeout(() => window.location.reload(), 1000)
         }
         else {
             //あればボタンをクリックし次のページに進む
