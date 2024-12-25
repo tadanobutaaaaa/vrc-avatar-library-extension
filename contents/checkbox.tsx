@@ -15,6 +15,28 @@ type CheckboxProps = {
     itemId: string
 }
 
+const ResetCheckboxButton = () => {
+    const buttonProcess = () => {
+        chrome.storage.local.clear()
+        window.location.reload()
+    }
+    return (
+    <button
+        style={{
+            backgroundColor: "#ea5550",
+            color: "#fff",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            border: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+            marginBottom: "15px",
+        }}
+        onClick={buttonProcess}
+    >全てにチェックを付ける</button>
+    )
+}
+
 const CheckboxWithLabel = ({ defaultStatus, itemId }: CheckboxProps) => {
     const handleChange = (checked: boolean, productId: string) => {
         console.log(checked)
@@ -35,6 +57,14 @@ const CheckboxWithLabel = ({ defaultStatus, itemId }: CheckboxProps) => {
 
 window.addEventListener("load", () => {
     const elements = document.getElementsByClassName("mb-16 bg-white p-16 desktop:rounded-8 desktop:py-24 desktop:px-40")
+    const resetButton = document.createElement("div")
+    elements[0].before(resetButton)
+
+    const root = createRoot(resetButton)
+    root.render(
+        <ResetCheckboxButton />
+    )
+
     for(let i = 0; i < elements.length; i++) {
         const element = elements[i].getElementsByClassName("flex gap-8 desktop:gap-16 border-b border-border300 pb-16")
 
