@@ -42,10 +42,12 @@ window.addEventListener("load", () => {
         const itemId = imagehref.replace("https://booth.pm/ja/items/","")
 
         chrome.storage.local.get([itemId], (result) => {
-            let isChecked = true
-            console.log("result:",result)
+            let isChecked: boolean
             if(Object.keys(result).length !== 0) {
                 isChecked = result[itemId]
+            } else {
+                isChecked = true
+                chrome.storage.local.set({[itemId]: true})
             }
             const checkboxContainer = document.createElement("div")
             element[0].before(checkboxContainer)
