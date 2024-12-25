@@ -61,7 +61,7 @@ export function getInformation() {
                 },
             });
             console.log("初めてのStorageの登録が完了しました");
-        } else {
+        } else if(pageList.length !== 0) {
             const currentData = result.postInformation;
             const updateData = {
                 ...currentData,
@@ -83,7 +83,7 @@ export function getInformation() {
             //なければ処理を終了する
             chrome.storage.local.remove(["postInformation"])
             console.log("次のページは存在しません")
-            setTimeout(() => window.location.reload(), 1000)
+            //setTimeout(() => window.location.reload(), 1000)
         }
         else {
             //あればボタンをクリックし次のページに進む
