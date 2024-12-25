@@ -8,6 +8,17 @@ export const config: PlasmoCSConfig = {
 }
 
 const getThumbnail = async() => {
+    const currentUrl = new URL(window.location.href)
+    const LibraryUrl = "https://accounts.booth.pm/library"
+
+    if(String(currentUrl).indexOf(LibraryUrl) === 0) {
+        window.location.href = LibraryUrl
+    } else {
+        window.location.href = "https://accounts.booth.pm/gifts"
+    }
+
+    console.log(currentUrl.href)
+    
     try{
         sendToBackground({
             name: "getThumbnail",
