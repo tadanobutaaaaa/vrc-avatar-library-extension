@@ -24,60 +24,62 @@ export function getInformation() {
             console.log(imageSrc)
             console.log(itemId)
 
-            //フォルダの郡を取得する
-            const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
+            const checkboxStorage = chrome.storage.local.get([itemId])
+            if (checkboxStorage) {
+                chrome.storage.local.set({[itemId]: !checkboxStorage})
+                //フォルダの郡を取得する
+                const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
 
-            const fileList: string[] = []
-            for(let j = 0; j < fileNameGroup.length; j++) {
-                //フォルダの名前を取得する
-                const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
-                //文字だけを取得する
-                const fileText = fileName[0].textContent
-                const fileReplaceZip = fileText.replace(".zip", "")
+                const fileList: string[] = []
+                for(let j = 0; j < fileNameGroup.length; j++) {
+                    //フォルダの名前を取得する
+                    const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
+                    //文字だけを取得する
+                    const fileText = fileName[0].textContent
+                    const fileReplaceZip = fileText.replace(".zip", "")
 
-                fileList.push(fileReplaceZip)
-            }
-
-            pageList.push({
-                [String(fileList)]: {
-                    "src": imageSrc,
-                    "id": itemId,
+                    fileList.push(fileReplaceZip)
                 }
-            })
-        }
 
-        const result = await chrome.storage.local.get(["postInformation"]);
-            if (Object.keys(result).length === 0) {
-                await chrome.storage.local.set({
-                    "postInformation": {
+                pageList.push({
+                    [String(fileList)]: {
+                        "src": imageSrc,
+                        "id": itemId,
+                    }
+                })
+                }
+
+                const result = await chrome.storage.local.get(["postInformation"]);
+                if (Object.keys(result).length === 0) {
+                    await chrome.storage.local.set({
+                        "postInformation": {
+                            [pageNumber]: pageList,
+                        },
+                    });
+                    console.log("初めてのStorageの登録が完了しました");
+                } else {
+                    const currentData = result.postInformation;
+                    const updateData = {
+                        ...currentData,
                         [pageNumber]: pageList,
-                    },
-                });
-                console.log("初めてのStorageの登録が完了しました");
-            } else {
-                const currentData = result.postInformation;
-                const updateData = {
-                    ...currentData,
-                    [pageNumber]: pageList,
-                };
+                    };
 
-                await chrome.storage.local.set({
-                    "postInformation": updateData,
-                });
-                console.log("データの更新がされました");
+                    await chrome.storage.local.set({
+                        "postInformation": updateData,
+                    });
+                    console.log("データの更新がされました");
+                }
+
+                const allData = chrome.storage.local.get(null);
+                console.log(allData);
             }
-
-            const allData = chrome.storage.local.get(null);
-            console.log(allData);
-            
-
 
         //次のページに行くボタンが有るかの判定
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
         if (nextButton.length === 0) {
             //なければ処理を終了する
             console.log("次のページは存在しません")
-            chrome.storage.local.clear();
+            chrome.storage.local.remove("postInformation")
         }
         else {
             //あればボタンをクリックし次のページに進む
