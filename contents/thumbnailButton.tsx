@@ -32,8 +32,9 @@ const EmptyElement: React.FC = () => {
 }
 
 const CustomButton = () => {
-    return <button
-    style={{
+    return (
+    <button
+        style={{
         backgroundColor: "#38B2AC",
         color: "#fff",
         padding: "8px 16px",
@@ -44,7 +45,7 @@ const CustomButton = () => {
         marginTop: "10px",
     }}
     onClick={getThumbnail}
-    >処理開始ボタン</button>
+    >処理開始</button>)
 }
 
 window.addEventListener("load", () => {
