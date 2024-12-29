@@ -82,9 +82,20 @@ export function getInformation() {
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
         if (nextButton.length === 0) {
             //なければ処理を終了する
-            chrome.storage.local.remove(["postInformation"])
             console.log("次のページは存在しません")
-            //setTimeout(() => window.location.reload(), 1000)
+            const postJson = await chrome.storage.local.get(["postInformation"])
+            console.log(postJson.postInformation)
+            fetch("http://localhost:8080/send/fileImages", {
+                mode: "cors",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(postJson.postInformation),
+            }).catch((error) => {
+                console.error("エラーが発生しました", error)    
+            })
+            chrome.storage.local.remove(["postInformation"])
         }
         else {
             //あればボタンをクリックし次のページに進む
