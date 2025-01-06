@@ -18,8 +18,7 @@ type CheckboxProps = {
 const ResetCheckboxButton = () => {
     const buttonProcess = () => {
         chrome.storage.local.clear()
-        const allData = chrome.storage.local.get(null);
-        console.log(allData);
+        chrome.storage.local.set({"isUnchecked": false})
         window.location.reload()
     }
     return (
@@ -29,13 +28,34 @@ const ResetCheckboxButton = () => {
             color: "#fff",
             padding: "8px 16px",
             borderRadius: "4px",
-            border: "none",
             fontWeight: "bold",
-            cursor: "pointer",
+            marginLeft: "8px",
             marginBottom: "15px",
         }}
         onClick={buttonProcess}
     >全てにチェックを付ける</button>
+    )
+}
+
+const NotCheckedButton = () => {
+    const buttonProcess = () => {
+        chrome.storage.local.clear()
+        chrome.storage.local.set({"isUnchecked": true})
+        window.location.reload()
+    }
+    return (
+    <button
+        style={{
+            backgroundColor: "#5383c3",
+            color: "#fff",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            fontWeight: "bold",
+            marginLeft: "8px",
+            marginBottom: "15px",
+        }}
+        onClick={buttonProcess}
+    >全てのチェックを外す</button>
     )
 }
 
@@ -65,32 +85,37 @@ window.addEventListener("load", () => {
 
     const root = createRoot(resetButton)
     root.render(
-        <ResetCheckboxButton />
+        <>
+            <ResetCheckboxButton />
+            <NotCheckedButton />
+        </>
     )
+    chrome.storage.local.get(["isUnchecked"], (result) => {
+        const isUnchecked = result["isUnchecked"]
+        for(let i = 0; i < elements.length; i++) {
+            const element = elements[i].getElementsByClassName("flex gap-8 desktop:gap-16 border-b border-border300 pb-16")
 
-    for(let i = 0; i < elements.length; i++) {
-        const element = elements[i].getElementsByClassName("flex gap-8 desktop:gap-16 border-b border-border300 pb-16")
+            const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
+            const itemNameText = itemName[0].textContent
 
-        const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
-        const itemNameText = itemName[0].textContent
-
-        chrome.storage.local.get([itemNameText], (result) => {
-            let isChecked: boolean
-            if(Object.keys(result).length !== 0) {
-                isChecked = result[itemNameText]
-            } else {
-                isChecked = true
-                chrome.storage.local.set({[itemNameText]: true})
-            }
-            const checkboxContainer = document.createElement("div")
-            element[0].before(checkboxContainer)
-            
-            const root = createRoot(checkboxContainer)
-            root.render(
-                <CheckboxWithLabel defaultStatus={isChecked} itemId={itemNameText}/>
-            ) 
-        })
-    }
+            chrome.storage.local.get([itemNameText], (itemResult) => {
+                let isChecked: boolean
+                if(Object.keys(itemResult).length !== 0) {
+                    isChecked = itemResult[itemNameText]
+                } else {
+                    isChecked = !isUnchecked
+                }
+                const checkboxContainer = document.createElement("div")
+                element[0].before(checkboxContainer)
+                
+                const root = createRoot(checkboxContainer)
+                root.render(
+                    <CheckboxWithLabel defaultStatus={isChecked} itemId={itemNameText}/>
+                ) 
+                console.log(isUnchecked)
+            })
+        }
+    })
 })
 
 export default EmptyElement

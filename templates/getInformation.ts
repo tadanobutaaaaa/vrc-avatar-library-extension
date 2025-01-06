@@ -96,6 +96,7 @@ export function getInformation() {
                 console.error("エラーが発生しました", error)    
             })
             chrome.storage.local.remove(["postInformation"])
+            setTimeout(() => {window.location.reload()}, 1000)
         }
         else {
             //あればボタンをクリックし次のページに進む
