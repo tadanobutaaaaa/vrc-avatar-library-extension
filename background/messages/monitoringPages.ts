@@ -5,7 +5,7 @@ let timerId = null
 let onUpdatedListener = null
 
 const handler: PlasmoMessaging.MessageHandler<string> = async (req) => {
-    onUpdatedListener = (tabId, changeInfo, tab) => {
+    onUpdatedListener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
         if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
             if (timerId !== null) {
                 clearTimeout(timerId)
