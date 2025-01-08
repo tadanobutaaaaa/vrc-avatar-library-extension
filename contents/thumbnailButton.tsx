@@ -16,8 +16,6 @@ const getThumbnail = async() => {
     } else {
         window.location.href = "https://accounts.booth.pm/gifts"
     }
-
-    console.log(currentUrl.href)
     
     try{
         sendToBackground({
