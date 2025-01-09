@@ -102,6 +102,7 @@ window.addEventListener("load", () => {
                     isChecked = itemResult[itemNameText]
                 } else {
                     isChecked = !isUnchecked
+                    chrome.storage.local.set({[itemNameText]: isChecked})
                 }
                 const checkboxContainer = document.createElement("div")
                 element[0].before(checkboxContainer)
