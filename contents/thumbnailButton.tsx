@@ -42,19 +42,22 @@ const EmptyElement: React.FC = () => {
 
 const CustomButton = () => {
     return (
-    <button
-        style={{
-        backgroundColor: "#38B2AC",
-        color: "#fff",
-        padding: "8px 16px",
-        borderRadius: "4px",
-        border: "none",
-        fontWeight: "bold",
-        cursor: "pointer",
-        marginTop: "10px",
-    }}
-    onClick={getThumbnail}
-    >処理開始</button>)
+    <a href="vrc-avater-library://open">
+        <button
+            style={{
+            backgroundColor: "#38B2AC",
+            color: "#fff",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            border: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+            marginTop: "10px",
+            }}
+            onClick={getThumbnail}
+        >処理開始</button>
+    </a>
+    )
 }
 
 window.addEventListener("load", () => {
