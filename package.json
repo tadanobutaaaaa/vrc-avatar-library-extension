@@ -1,6 +1,6 @@
 {
-  "name": "vrc-avater-library",
-  "displayName": "Vrc avater library",
+  "name": "vrc-avatar-library",
+  "displayName": "Vrc avatar library",
   "version": "1.0.0",
   "description": "Boothのサムネイルを取得するための拡張機能",
   "author": "tadanobutaaaaa",

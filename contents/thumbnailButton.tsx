@@ -4,32 +4,27 @@ import type { PlasmoCSConfig } from "plasmo"
 import React from "react"
 
 export const config: PlasmoCSConfig = {
-    matches: ["https://accounts.booth.pm/library*"]
+    matches: ["https://accounts.booth.pm/library", 
+    "https://accounts.booth.pm/library?page=1",
+    "https://accounts.booth.pm/library/gifts?page=1"]
 }
 
 const getThumbnail = async() => {
-    const currentUrl = new URL(window.location.href)
-    const LibraryUrl = "https://accounts.booth.pm/library/gifts"
-
-    if(String(currentUrl).indexOf(LibraryUrl) === 0) {
-        window.location.href = LibraryUrl
-    } else {
-        window.location.href = "https://accounts.booth.pm/library"
-    }
-    
     try{
-        sendToBackground({
+        await sendToBackground({
             name: "getThumbnail",
             body: {
                 status: true
             }
         })
+        /*
         await sendToBackground({
             name: "monitoringPages",
             body: {
                 status: true
             }
         })
+        */
     } catch (error) {
         console.log("実行できませんでした:", error)
     }
@@ -42,7 +37,7 @@ const EmptyElement: React.FC = () => {
 
 const CustomButton = () => {
     return (
-    <a href="vrc-avater-library://open">
+    <a href="vrc-avatar-library://open">
         <button
             style={{
             backgroundColor: "#38B2AC",
