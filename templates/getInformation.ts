@@ -17,9 +17,6 @@ export function getInformation() {
             //商品のURLを取得する -> 商品のIDのみを取得する
             const imagehref = elements[i].querySelector("a:first-child").getAttribute("href")
             const itemId = imagehref.replace("https://booth.pm/ja/items/","")
-            
-            console.log(imageSrc)
-            console.log(itemId)
 
             const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
             const itemNameText = itemName[0].textContent
@@ -28,7 +25,6 @@ export function getInformation() {
                 const checkboxStorage = result[itemNameText]
                 console.log(checkboxStorage)
                 if (checkboxStorage) {
-                    console.log("checkboxがtrueです")
                     chrome.storage.local.set({[itemNameText]: false})
                     //フォルダの郡を取得する
                     const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
@@ -61,7 +57,6 @@ export function getInformation() {
                     [pageNumber]: pageList,
                 },
             })
-            console.log("初めてのStorageの登録が完了しました");
         } else if(pageList.length !== 0) {
             const currentData = result.postInformation;
             const updateData = {
@@ -72,19 +67,13 @@ export function getInformation() {
             await chrome.storage.local.set({
                 "postInformation": updateData,
             })
-            console.log("データの更新がされました")
         }
-
-        const allData = chrome.storage.local.get(null)
-        console.log(allData)
 
         //次のページに行くボタンが有るかの判定
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
         if (nextButton.length === 0) {
             //なければ処理を終了する
-            console.log("次のページは存在しません")
             const postJson = await chrome.storage.local.get(["postInformation"])
-            console.log(postJson.postInformation)
             fetch("http://localhost:8080/send/fileImages", {
                 mode: "cors",
                 method: "POST",

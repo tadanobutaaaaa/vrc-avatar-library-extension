@@ -61,9 +61,7 @@ const NotCheckedButton = () => {
 
 const CheckboxWithLabel = ({ defaultStatus, itemId }: CheckboxProps) => {
     const handleChange = (checked: boolean, productId: string) => {
-        console.log(checked)
         chrome.storage.local.set({[productId]: checked})
-        console.log(chrome.storage.local.get([productId]))
     }
     return (
         <input 
@@ -112,7 +110,6 @@ window.addEventListener("load", () => {
                 root.render(
                     <CheckboxWithLabel defaultStatus={isChecked} itemId={itemNameText}/>
                 ) 
-                console.log(isUnchecked)
             })
         }
     })
