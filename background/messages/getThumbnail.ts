@@ -5,8 +5,8 @@ function processPage() {
     console.log("処理が開始しました")
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
         chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        func: getInformation
+            target: { tabId: tabs[0].id },
+            func: getInformation
         })
     })
 }
@@ -20,6 +20,7 @@ function checkGoServer(intervalId: NodeJS.Timeout) {
         if (response.ok) {
             console.log("Goサーバーの接続を確認できました")
             processPage()
+            mainProcess()
             clearInterval(intervalId)
         } else {
             console.error("Goのサーバーが開いていません")
@@ -28,6 +29,38 @@ function checkGoServer(intervalId: NodeJS.Timeout) {
     .catch((error) => {
         console.log("Goのサーバーが開いていません")
     })
+}
+
+let timerId = null
+let onUpdatedListener = null
+
+function mainProcess() {
+    onUpdatedListener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+        if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
+            if (timerId !== null) {
+                clearTimeout(timerId)
+                timer()
+            }
+            chrome.scripting.executeScript({
+                target: { tabId },
+                func: getInformation
+            })
+        }
+    }
+
+    chrome.tabs.onUpdated.addListener(onUpdatedListener)
+    timer()
+}
+
+function timer() {
+    console.log("タイマーを開始しました")
+    timerId = setTimeout(() => {
+        if (onUpdatedListener) {
+            chrome.tabs.onUpdated.removeListener(onUpdatedListener)
+            console.log("すべての処理を停止しました")
+            onUpdatedListener = null
+        }
+    }, 2000)
 }
 
 const handler: PlasmoMessaging.MessageHandler<string> = (req) => {
