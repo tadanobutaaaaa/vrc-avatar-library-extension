@@ -1,10 +1,20 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
 import { getInformation } from "~templates/getInformation"
 
+function processPage() {
+    console.log("処理が開始しました")
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            func: getInformation
+        })
+    })
+}
+
 let timerId = null
 let onUpdatedListener = null
 
-const handler: PlasmoMessaging.MessageHandler<string> = async (req) => {
+function mainProcess() {
     onUpdatedListener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
         if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
             if (timerId !== null) {
@@ -23,13 +33,20 @@ const handler: PlasmoMessaging.MessageHandler<string> = async (req) => {
 }
 
 function timer() {
+    console.log("タイマーを開始しました")
     timerId = setTimeout(() => {
         if (onUpdatedListener) {
             chrome.tabs.onUpdated.removeListener(onUpdatedListener)
-            console.log("処理を停止しました")
+            console.log("すべての処理を停止しました")
             onUpdatedListener = null
         }
     }, 2000)
+}
+
+const handler: PlasmoMessaging.MessageHandler<string> = (req) => {
+    console.log("メッセージを受け取りました")
+    processPage()
+    mainProcess()
 }
 
 export default handler

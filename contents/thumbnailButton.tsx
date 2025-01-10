@@ -4,30 +4,55 @@ import type { PlasmoCSConfig } from "plasmo"
 import React from "react"
 
 export const config: PlasmoCSConfig = {
-    matches: ["https://accounts.booth.pm/library", 
-    "https://accounts.booth.pm/library?page=1",
-    "https://accounts.booth.pm/library/gifts?page=1"]
+    matches: ["https://accounts.booth.pm/library*"]
+}
+
+function goToHomePage() {
+    const currentUrl = new URL(window.location.href)
+    const LibraryUrl = "https://accounts.booth.pm/library"
+
+    if(String(currentUrl).indexOf(LibraryUrl) === 0) {
+        window.location.href = LibraryUrl
+    } else {
+        window.location.href = "https://accounts.booth.pm/gifts"
+    }
 }
 
 const getThumbnail = async() => {
-    try{
-        await sendToBackground({
+    
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => {
+        controller.abort()
+    }, 2000)
+    await fetch("http://localhost:8080/health", {
+        mode: "cors",
+        method: "GET",
+        signal: controller.signal
+    }).then((response) => {
+        clearTimeout(timeoutId)
+        console.log("Goサーバーの状態を確認します")
+        if (response.ok) {
+            console.log("Goサーバーの接続を確認できました")
+            sendToBackground({
+                name: "activeGolangServer",
+                body: {
+                    status: true
+                }
+            })
+        }
+    })
+    .catch((error) => {
+        clearTimeout(timeoutId)
+        console.log("Goのサーバーが開いていません")
+        sendToBackground({
             name: "getThumbnail",
             body: {
                 status: true
             }
         })
-        /*
-        await sendToBackground({
-            name: "monitoringPages",
-            body: {
-                status: true
-            }
-        })
-        */
-    } catch (error) {
-        console.log("実行できませんでした:", error)
-    }
+        window.location.href = "vrc-avatar-library://open"
+    })
+    goToHomePage()
 }
 
 //plasmoのエラー対策 特に意味はなし 
@@ -37,7 +62,6 @@ const EmptyElement: React.FC = () => {
 
 const CustomButton = () => {
     return (
-    <a href="vrc-avatar-library://open">
         <button
             style={{
             backgroundColor: "#38B2AC",
@@ -51,7 +75,6 @@ const CustomButton = () => {
             }}
             onClick={getThumbnail}
         >処理開始</button>
-    </a>
     )
 }
 

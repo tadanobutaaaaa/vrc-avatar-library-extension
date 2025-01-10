@@ -23,7 +23,6 @@ export function getInformation() {
 
             chrome.storage.local.get([itemNameText], (result) => {
                 const checkboxStorage = result[itemNameText]
-                console.log(checkboxStorage)
                 if (checkboxStorage) {
                     chrome.storage.local.set({[itemNameText]: false})
                     //フォルダの郡を取得する
@@ -85,7 +84,7 @@ export function getInformation() {
                 console.error("エラーが発生しました", error)    
             })
             chrome.storage.local.remove(["postInformation"])
-            setTimeout(() => {window.location.reload()}, 1000)
+            //setTimeout(() => {window.location.reload()}, 1000)
         }
         else {
             //あればボタンをクリックし次のページに進む

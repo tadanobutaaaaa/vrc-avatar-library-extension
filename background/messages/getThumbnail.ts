@@ -27,7 +27,7 @@ function checkGoServer(intervalId: NodeJS.Timeout) {
         }
     })
     .catch((error) => {
-        console.log("Goのサーバーが開いていません")
+        console.log("Goのサーバーが開いていません2")
     })
 }
 
@@ -64,6 +64,7 @@ function timer() {
 }
 
 const handler: PlasmoMessaging.MessageHandler<string> = (req) => {
+    console.log("メッセージを受け取りました")
     const intervalId = setInterval(() => checkGoServer(intervalId), 2000);
     setTimeout(() => {
         clearInterval(intervalId);
