@@ -1,4 +1,5 @@
-import { sendToBackground } from "@plasmohq/messaging";
+import { ToastContainer, toast } from 'react-toastify'
+import { sendToBackground } from "@plasmohq/messaging"
 import { createRoot } from "react-dom/client"
 import type { PlasmoCSConfig } from "plasmo"
 import React from "react"
@@ -19,7 +20,7 @@ function goToHomePage() {
 }
 
 const getThumbnail = async() => {
-    
+    chrome.storage.local.set({"start": true})
     const controller = new AbortController()
     const timeoutId = setTimeout(() => {
         controller.abort()
@@ -60,7 +61,7 @@ const EmptyElement: React.FC = () => {
     return <></>
 }
 
-const CustomButton = () => {
+const CustomButton = () => {   
     return (
         <button
             style={{
