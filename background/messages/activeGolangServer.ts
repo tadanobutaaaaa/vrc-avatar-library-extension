@@ -44,7 +44,7 @@ function timer() {
 }
 
 const handler: PlasmoMessaging.MessageHandler<string> = (req) => {
-    console.log("メッセージを受け取りました")
+    chrome.storage.local.set({"start": true})
     processPage()
     mainProcess()
 }

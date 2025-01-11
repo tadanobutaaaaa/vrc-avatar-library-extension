@@ -19,6 +19,7 @@ function checkGoServer(intervalId: NodeJS.Timeout) {
         console.log("Goサーバーの状態を確認します")
         if (response.ok) {
             console.log("Goサーバーの接続を確認できました")
+            chrome.storage.local.set({"start": true})
             processPage()
             mainProcess()
             clearInterval(intervalId)
@@ -68,7 +69,7 @@ const handler: PlasmoMessaging.MessageHandler<string> = (req) => {
     const intervalId = setInterval(() => checkGoServer(intervalId), 2000);
     setTimeout(() => {
         clearInterval(intervalId);
-    }, 6000);
+    }, 14000);
 }
 
 export default handler
