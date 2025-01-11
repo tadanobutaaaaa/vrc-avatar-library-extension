@@ -40,7 +40,6 @@ const WarningAlert = () => {
 window.addEventListener("load", () => {
     chrome.storage.local.get(["start"], (result) => {
         if (result.start) {
-            console.log("warningAlertが読み込まれました")
             const target = document.querySelector("main")
             if (!target) return
 

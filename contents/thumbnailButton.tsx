@@ -20,7 +20,6 @@ function goToHomePage() {
 }
 
 const getThumbnail = async() => {
-    chrome.storage.local.set({"start": true})
     const controller = new AbortController()
     const timeoutId = setTimeout(() => {
         controller.abort()
@@ -31,9 +30,7 @@ const getThumbnail = async() => {
         signal: controller.signal
     }).then((response) => {
         clearTimeout(timeoutId)
-        console.log("Goサーバーの状態を確認します")
         if (response.ok) {
-            console.log("Goサーバーの接続を確認できました")
             sendToBackground({
                 name: "activeGolangServer",
                 body: {
@@ -44,7 +41,6 @@ const getThumbnail = async() => {
     })
     .catch((error) => {
         clearTimeout(timeoutId)
-        console.log("Goのサーバーが開いていません")
         sendToBackground({
             name: "getThumbnail",
             body: {
