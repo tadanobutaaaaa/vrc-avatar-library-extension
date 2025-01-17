@@ -85,7 +85,7 @@ export function getInformation() {
             })
             chrome.storage.local.remove(["postInformation"])
             chrome.storage.local.remove(["start"])
-            setTimeout(() => {window.location.reload()}, 1000)
+            setTimeout(() => {window.location.reload()}, 2000)
         }
         else {
             //あればボタンをクリックし次のページに進む
