@@ -11,12 +11,12 @@ export const config: PlasmoCSConfig = {
 
 function goToHomePage() {
     const currentUrl = new URL(window.location.href)
-    const LibraryUrl = "https://accounts.booth.pm/library"
+    const LibraryUrl = "https://accounts.booth.pm/library/gifts"
 
     if(String(currentUrl).indexOf(LibraryUrl) === 0) {
         window.location.href = LibraryUrl
     } else {
-        window.location.href = "https://accounts.booth.pm/gifts"
+        window.location.href = "https://accounts.booth.pm/Library"
     }
 }
 
