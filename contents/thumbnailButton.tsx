@@ -16,7 +16,7 @@ function goToHomePage() {
     if(String(currentUrl).indexOf(LibraryUrl) === 0) {
         window.location.href = LibraryUrl
     } else {
-        window.location.href = "https://accounts.booth.pm/Library"
+        window.location.href = "https://accounts.booth.pm/library"
     }
 }
 
