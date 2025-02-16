@@ -21,30 +21,29 @@ export function getInformation() {
             const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
             const itemNameText = itemName[0].textContent
 
-            chrome.storage.local.get([itemNameText], (result) => {
-                const checkboxStorage = result[itemNameText]
-                if (checkboxStorage) {
-                    chrome.storage.local.set({[itemNameText]: false})
-                    //フォルダの郡を取得する
-                    const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
+            const author = elements[i].getElementsByClassName("typography-14 text-text-gray600 !preserve-half-leading break-all")
+            const authorText = author[0].textContent
 
-                    const fileList: string[] = []
-                    for(let j = 0; j < fileNameGroup.length; j++) {
-                        //フォルダの名前を取得する
-                        const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
-                        //文字だけを取得する
-                        const fileText = fileName[0].textContent
-                        const fileReplaceZip = fileText.replace(".zip", "")
+            console.log("authorText", authorText)
+            //フォルダの郡を取得する
+            const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
 
-                        fileList.push(fileReplaceZip)
-                    }
+            const fileList: string[] = []
+            for(let j = 0; j < fileNameGroup.length; j++) {
+                //フォルダの名前を取得する
+                const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
+                //文字だけを取得する
+                const fileText = fileName[0].textContent
+                const fileReplaceZip = fileText.replace(".zip", "")
 
-                    pageList.push({
-                        [String(fileList)]: {
-                            "src": imageSrc,
-                            "id": itemId,
-                        }
-                    })
+                fileList.push(fileReplaceZip)
+            }
+
+            pageList.push({
+                [String(fileList)]: {
+                    "src": imageSrc,
+                    "id": itemId,
+                    "author": authorText,
                 }
             })
         }
