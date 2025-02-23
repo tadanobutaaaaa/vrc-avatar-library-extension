@@ -18,13 +18,13 @@ export function getInformation() {
             const imagehref = elements[i].querySelector("a:first-child").getAttribute("href")
             const itemId = imagehref.replace("https://booth.pm/ja/items/","")
 
-            const itemName = elements[i].getElementsByClassName("text-text-default font-bold typography-16 !preserve-half-leading mb-8 break-all")
-            const itemNameText = itemName[0].textContent
+            const shopName = elements[i].getElementsByClassName("typography-14 text-text-gray600 !preserve-half-leading break-all")
+            const shopNameText = shopName[0].textContent
 
-            const author = elements[i].getElementsByClassName("typography-14 text-text-gray600 !preserve-half-leading break-all")
-            const authorText = author[0].textContent
+            const shopImg = elements[i].querySelector('img[class~="rounded-\[50%\]"]')
+            const shopSrc = shopImg.getAttribute("src")
+            const shopSrc128 = shopSrc.replace("48x48", "128x128")
 
-            console.log("authorText", authorText)
             //フォルダの郡を取得する
             const fileNameGroup = elements[i].getElementsByClassName("mt-16 desktop:flex desktop:justify-between desktop:items-center")
 
@@ -41,9 +41,10 @@ export function getInformation() {
 
             pageList.push({
                 [String(fileList)]: {
-                    "src": imageSrc,
+                    "author": shopNameText,
                     "id": itemId,
-                    "author": authorText,
+                    "itemSrc": imageSrc,
+                    "shopSrc": shopSrc128,
                 }
             })
         }
@@ -84,7 +85,7 @@ export function getInformation() {
             })
             chrome.storage.local.remove(["postInformation"])
             chrome.storage.local.remove(["start"])
-            setTimeout(() => {window.location.reload()}, 2000)
+            //setTimeout(() => {window.location.reload()}, 2000)
         }
         else {
             //あればボタンをクリックし次のページに進む
