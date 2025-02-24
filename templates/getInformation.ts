@@ -21,6 +21,9 @@ export function getInformation() {
             const shopName = elements[i].getElementsByClassName("typography-14 text-text-gray600 !preserve-half-leading break-all")
             const shopNameText = shopName[0].textContent
 
+            const shopUrl = elements[i].getElementsByClassName("no-underline")[1].getAttribute("href")
+            const ShopId = shopUrl.match(/^https:\/\/([^\/]+)\.booth\.pm\//)
+
             const shopImg = elements[i].querySelector('img[class~="rounded-\[50%\]"]')
             const shopSrc = shopImg.getAttribute("src")
             const shopSrc128 = shopSrc.replace("48x48", "128x128")
@@ -41,9 +44,10 @@ export function getInformation() {
 
             pageList.push({
                 [String(fileList)]: {
-                    "author": shopNameText,
                     "id": itemId,
                     "itemSrc": imageSrc,
+                    "shopId": ShopId[1],
+                    "shopName": shopNameText,
                     "shopSrc": shopSrc128,
                 }
             })
