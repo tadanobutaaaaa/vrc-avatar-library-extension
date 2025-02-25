@@ -9,6 +9,8 @@ export const config: PlasmoCSConfig = {
     matches: ["https://accounts.booth.pm/library*"]
 }
 
+const currentVersion = "v1.1.1"
+
 function goToHomePage() {
     const currentUrl = new URL(window.location.href)
     const LibraryUrl = "https://accounts.booth.pm/library/gifts"
@@ -29,23 +31,33 @@ const getThumbnail = async() => {
         mode: "cors",
         method: "GET",
         signal: controller.signal
-    }).then((response) => {
-        goToHomePage()
-        clearTimeout(timeoutId)
-        if (response.ok) {
-            sendToBackground({
-                name: "activeGolangServer",
-                body: {
-                    status: true
-                }
-            })
+    }).then(async (response) => {
+        const data = await response.json()
+        if (data.version != currentVersion) {
+            toast.warning(
+                <>
+                    新しいバージョンが公開されています。<br />
+                    アプリを更新してもう一度お試しください。
+                </>
+            )
+        } else {
+            goToHomePage()
+            clearTimeout(timeoutId)
+            if (response.ok) {
+                sendToBackground({
+                    name: "activeGolangServer",
+                    body: {
+                        status: true
+                    }
+                })
+            }
         }
     })
     .catch((error) => {
         clearTimeout(timeoutId)
         toast.error(
             <>
-                「VRC-Avatar-Library.exe」が開かれていません<br />
+                「VRC-Avatar-Library.exe」が開かれていません。<br />
                 再度、開いてから処理を開始してください。
             </>
         )
