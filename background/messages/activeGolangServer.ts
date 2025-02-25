@@ -16,7 +16,7 @@ let onUpdatedListener = null
 
 function mainProcess() {
     onUpdatedListener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-        if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
+        if (changeInfo.status === "complete" && tab.url.startsWith("https://accounts.booth.pm/library")) {
             if (timerId !== null) {
                 clearTimeout(timerId)
                 timer()
