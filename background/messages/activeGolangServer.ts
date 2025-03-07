@@ -11,7 +11,7 @@ function processPage() {
     })
 }
 
-let timerId = null
+let timerId = null;
 let onUpdatedListener = null
 
 function mainProcess() {
@@ -40,11 +40,10 @@ function timer() {
             console.log("すべての処理を停止しました")
             onUpdatedListener = null
         }
-    }, 2000)
+    }, 3000) 
 }
 
 const handler: PlasmoMessaging.MessageHandler<string> = (req) => {
-    chrome.storage.local.set({"start": true})
     processPage()
     mainProcess()
 }
