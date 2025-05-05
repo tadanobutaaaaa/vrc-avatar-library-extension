@@ -23,14 +23,9 @@ function goToHomePage() {
 }
 
 const getThumbnail = async() => {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => {
-        controller.abort()
-    }, 1000)
     await fetch("http://localhost:8080/health", {
         mode: "cors",
         method: "GET",
-        signal: controller.signal
     }).then(async (response) => {
         const data = await response.json()
         if (data.version != currentVersion) {
@@ -41,20 +36,18 @@ const getThumbnail = async() => {
                 </>
             )
         } else {
-            goToHomePage()
-            clearTimeout(timeoutId)
             if (response.ok) {
                 sendToBackground({
                     name: "activeGolangServer",
                     body: {
-                        status: true
+                        action: "startTabMonitoring",
                     }
                 })
+                setTimeout(goToHomePage, 2000)
             }
         }
     })
     .catch((error) => {
-        clearTimeout(timeoutId)
         toast.error(
             <>
                 「VRC-Avatar-Library.exe」が開かれていません。<br />
