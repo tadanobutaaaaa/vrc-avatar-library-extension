@@ -38,7 +38,7 @@ function getInformation() {
             pageList.push({
                 [String(fileList)]: {
                     "id": itemId,
-                    "Src": imageSrc,
+                    "src": imageSrc,
                 }
             })
         }
@@ -63,7 +63,9 @@ function getInformation() {
         }
 
         //次のページに行くボタンが有るかの判定
+        console.log("次のページに行くボタンを探します")
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
+        console.log("次のページに行くボタンの数 : ", nextButton.length)
         if (nextButton.length === 0) {
             //なければ処理を終了する
             console.log("処理を終了します")
