@@ -43,7 +43,7 @@ const getThumbnail = async() => {
                         action: "startTabMonitoring",
                     }
                 })
-                setTimeout(goToHomePage, 2000)
+                setTimeout(goToHomePage, 1000)
             }
         }
     })
