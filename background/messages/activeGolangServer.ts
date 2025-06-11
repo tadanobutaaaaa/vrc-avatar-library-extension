@@ -1,7 +1,5 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
 
-let tabUpdateListener = null
-
 function getInformation() {
     async function mainProcessing() {
         //現在のurlを取得する
@@ -65,11 +63,9 @@ function getInformation() {
         //次のページに行くボタンが有るかの判定
         console.log("次のページに行くボタンを探します")
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
-        console.log("次のページに行くボタンの数 : ", nextButton.length)
         if (nextButton.length === 0) {
             //なければ処理を終了する
             console.log("処理を終了します")
-            chrome.runtime.sendMessage({ body: { action: "removeTabListener" } })
             const postJson = await chrome.storage.local.get(["postInformation"])
             console.log("postJson : ", postJson.postInformation)
             fetch("http://localhost:8080/send/fileImages", {
@@ -83,6 +79,7 @@ function getInformation() {
                 console.error("エラーが発生しました", error)    
             })
             chrome.storage.local.remove(["postInformation"])
+            setTimeout(() => {window.location.reload()}, 2000)
         }
         else {
             //あればボタンをクリックし次のページに進む
@@ -94,60 +91,52 @@ function getInformation() {
     setTimeout(mainProcessing, 1500) //TODO: デバッグ用
 }
 
-function executeScript() {
-    console.log("スクリプトを実行します")
+function processPage() {
+    console.log("処理が開始しました")
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
         chrome.scripting.executeScript({
             target: { tabId: tabs[0].id },
-            func: getInformation,
+            func: getInformation
         })
     })
 }
 
-function startTabMonitoring() {
-    if (tabUpdateListener !== null) {
-        console.log("既にモニタリングが開始されています")
-        return
-    }
+let timerId = null
+let onUpdatedListener = null
 
-    tabUpdateListener = (tabId: number, changeInfo: any, tab: any) => {
-        console.log(changeInfo.status)
-        if (changeInfo.status === "complete") {
-            if ((changeInfo.url && changeInfo.url.startsWith("https://accounts.booth.pm/library")) || (tab.url && tab.url.startsWith("https://accounts.booth.pm/library"))) {
-                console.log("ページが読み込まれました")
-                executeScript()
+function mainProcess() {
+    onUpdatedListener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+        if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
+            if (timerId !== null) {
+                clearTimeout(timerId)
+                timer()
             }
+            chrome.scripting.executeScript({
+                target: { tabId },
+                func: getInformation
+            })
         }
     }
 
-    chrome.tabs.onUpdated.addListener(tabUpdateListener)
-    console.log("モニタリングを開始した")
+    chrome.tabs.onUpdated.addListener(onUpdatedListener)
+    timer()
 }
 
-const handler: PlasmoMessaging.MessageHandler = (req) => {
-    if (req.body.action === "removeTabListener") {
-        if (tabUpdateListener !== null) {
-            console.log("リスナーを削除します")
-            try {
-                chrome.tabs.onUpdated.removeListener(tabUpdateListener)
-                tabUpdateListener = null
-                console.log("tabUpdateListener : ", tabUpdateListener)
-                if (tabUpdateListener !== null) {
-                    console.log("リスナーが残っています")
-                } else {
-                    console.log("リスナーが削除されました")
-                }
-            } catch (error) {
-                console.error("リスナー削除中にエラーが発生:", error)
-            }
-        } else {
-            console.log("リスナーが見つかりません")
+function timer() {
+    console.log("タイマーを開始しました")
+    timerId = setTimeout(() => {
+        if (onUpdatedListener) {
+            chrome.tabs.onUpdated.removeListener(onUpdatedListener)
+            console.log("すべての処理を停止しました")
+            onUpdatedListener = null
         }
-        console.log("すべての処理が終了しました")
-    } else if (req.body.action === "startTabMonitoring") {
-        console.log("メッセージを受け取りました")
-        startTabMonitoring()
-    }
+    }, 3000)
+}
+
+
+const handler: PlasmoMessaging.MessageHandler = (req) => {
+    processPage()
+    mainProcess()
 }
 
 export default handler
