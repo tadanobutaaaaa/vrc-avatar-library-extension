@@ -61,13 +61,10 @@ function getInformation() {
         }
 
         //次のページに行くボタンが有るかの判定
-        console.log("次のページに行くボタンを探します")
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
         if (nextButton.length === 0) {
             //なければ処理を終了する
-            console.log("処理を終了します")
             const postJson = await chrome.storage.local.get(["postInformation"])
-            console.log("postJson : ", postJson.postInformation)
             fetch("http://localhost:8080/send/fileImages", {
                 mode: "cors",
                 method: "POST",
@@ -82,16 +79,14 @@ function getInformation() {
         }
         else {
             //あればボタンをクリックし次のページに進む
-            console.log("次のページに進みます")
-            nextButton[0].click() //TODO: デバッグ用
+            nextButton[0].click()
         }
     }
     //自然に見えるように&アクセスが集中にしないように調整
-    setTimeout(mainProcessing, 1500) //TODO: デバッグ用
+    setTimeout(mainProcessing, 1500)
 }
 
 function processPage() {
-    console.log("処理が開始しました")
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
         chrome.scripting.executeScript({
             target: { tabId: tabs[0].id },
@@ -122,11 +117,9 @@ function mainProcess() {
 }
 
 function timer() {
-    console.log("タイマーを開始しました")
     timerId = setTimeout(() => {
         if (onUpdatedListener) {
             chrome.tabs.onUpdated.removeListener(onUpdatedListener)
-            console.log("すべての処理を停止しました")
             onUpdatedListener = null
         }
     }, 3000)
