@@ -26,7 +26,7 @@ function getInformation() {
             const fileList: string[] = []
             for(let j = 0; j < fileNameGroup.length; j++) {
                 //フォルダの名前を取得する
-                const fileName = fileNameGroup[j].getElementsByClassName("typography-14 !preserve-half-leading")
+                const fileName = fileNameGroup[j].getElementsByClassName("text-14")
                 //文字だけを取得する
                 const fileText = fileName[0].textContent
                 const fileReplaceZip = fileText.replace(".zip", "")
