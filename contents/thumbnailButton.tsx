@@ -9,7 +9,7 @@ export const config: PlasmoCSConfig = {
     matches: ["https://accounts.booth.pm/library*"]
 }
 
-const currentVersion = "v1.2.0"
+const currentVersion = "v1.2.1"
 
 function goToHomePage() {
     const currentUrl = new URL(window.location.href)
