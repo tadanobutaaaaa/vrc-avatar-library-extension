@@ -1,6 +1,7 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
 
-function getInformation() {
+function getInformation(firstPageOnly: boolean) {
+    console.log("firstPageOnly:", firstPageOnly)
     async function mainProcessing() {
         //現在のurlを取得する
         const currentUrl = new URL(window.location.href)
@@ -62,7 +63,8 @@ function getInformation() {
 
         //次のページに行くボタンが有るかの判定
         const nextButton = document.getElementsByClassName("icon-arrow-open-right no-margin s-1x") as HTMLCollectionOf<HTMLButtonElement>
-        if (nextButton.length === 0) {
+        if (nextButton.length === 0 || firstPageOnly) {
+            console.log("次のページが存在しないか、1ページのみの処理が選択されました。処理を終了します。 firstPageOnly:", firstPageOnly)
             //なければ処理を終了する
             const postJson = await chrome.storage.local.get(["postInformation"])
             fetch("http://localhost:8080/send/fileImages", {
@@ -86,9 +88,11 @@ function getInformation() {
     setTimeout(mainProcessing, 1500)
 }
 
-function processPage() {
+function processPage(firstPageOnly: boolean = false) {
+    console.log("processPageが実行されました。firstPageOnly:", firstPageOnly)
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
         chrome.scripting.executeScript({
+            args: [firstPageOnly],
             target: { tabId: tabs[0].id },
             func: getInformation
         })
@@ -98,15 +102,17 @@ function processPage() {
 let timerId = null
 let onUpdatedListener = null
 
-function mainProcess() {
+function mainProcess(firstPageOnly: boolean) {
     onUpdatedListener = (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
         if (changeInfo.status === "complete" && tab.url.includes("https://accounts.booth.pm/library")) {
+            console.log("mainProcessが実行されました。")
             if (timerId !== null) {
                 clearTimeout(timerId)
                 timer()
             }
             chrome.scripting.executeScript({
-                target: { tabId },
+                args: [firstPageOnly],
+                target: { tabId: tabId },
                 func: getInformation
             })
         }
@@ -127,8 +133,10 @@ function timer() {
 
 
 const handler: PlasmoMessaging.MessageHandler = (req) => {
-    processPage()
-    mainProcess()
+    console.log("メッセージを受信しました:", req.body.firstPageOnly)
+    // processPage(req.body.firstPageOnly)
+    mainProcess(req.body.firstPageOnly)
 }
+//TODO: 1ページのみを処理した場合にアプリ側に情報を送る処理を追加する
 
 export default handler
