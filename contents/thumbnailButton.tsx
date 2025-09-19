@@ -72,7 +72,7 @@ const CustomButton = () => {
                             firstPageOnly: isChecked,
                         }
                     })
-                    setTimeout(goToHomePage, 1000)
+                        
                 }
             }
         })

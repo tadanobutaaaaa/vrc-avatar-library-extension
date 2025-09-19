@@ -42,6 +42,17 @@
       "tabs",
       "scripting",
       "storage"
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "contents/*", 
+          "background/*"
+        ],
+        "matches": [ 
+          "https://accounts.booth.pm/*" 
+        ]
+      }
     ]
   }
 }
